@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY --from=builder /app/server .
 COPY --from=builder /app/ /app/
-
+RUN chown -R appuser:appgroup /app
 # Best Practice #2: Non-root user
 USER appuser
 

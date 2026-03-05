@@ -1,0 +1,23 @@
+services:
+  nginx_serve:
+    image: nginx:latest
+    container_name: nginx_web
+    ports:
+      - 80:80
+    networks:
+      - net_work
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      go_app:
+        condition: service_started
+  go_app:
+    image: sumit9165/nr-go-app:latest
+    container_name: go_apps
+    ports:
+      - 3000:3000
+    networks:
+      - net_work
+networks:
+  net_work:
