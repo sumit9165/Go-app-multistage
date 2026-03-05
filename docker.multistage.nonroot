@@ -1,0 +1,29 @@
+# Stage 1########################
+FROM golang:1.22-alpine3.19 AS builder
+
+WORKDIR /app
+
+COPY go.mod .
+RUN go mod download
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o server .
+
+###################Stage 2################################
+FROM alpine:3.19
+
+# Best Practice #3: Combine RUN commands = fewer layers
+RUN apk --no-cache add ca-certificates && addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+COPY --from=builder /app/server .
+COPY --from=builder /app/ /app/
+
+# Best Practice #2: Non-root user
+USER appuser
+
+EXPOSE 3000
+
+CMD ["./server"]
+
